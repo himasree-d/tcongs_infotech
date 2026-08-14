@@ -11,7 +11,7 @@ Once deployed via GitHub Pages: `https://himasree-d.github.io/tcongs_infotech/`
 ```
 tcongs_infotech/
 ├── index.html                  # Main page (markup + inline/linked CSS)
-├── process-visual-poster.jpg   # Poster frame shown before video loads
+├── process-visual.mp4          # Compressed process/revision showcase video
 └── README.md
 ```
 
