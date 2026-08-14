@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>tcongs Infotech — Digital Product Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F0E4;
+    --paper-2:#FBF8F1;
+    --paper-3:#ECE0C4;
+    --ink:#232A3D;
+    --ink-2:#1B2233;
+    --ink-soft:#5B6478;
+    --slate-on-dark:#A9B4C9;
+    --wisteria:#90A2C9;
+    --wisteria-deep:#5D6FA0;
+    --gold:#C89B3C;
+    --line: rgba(93,111,160,.24);
+    --line-dark: rgba(144,162,201,.22);
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'JetBrains Mono', monospace;
+    --wrap: 1180px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img,svg{display:block; max-width:100%;}
+  a{color:inherit; text-decoration:none;}
+  ul{list-style:none;}
+  .wrap{max-width:var(--wrap); margin:0 auto; padding:0 28px;}
+  .mono{font-family:var(--font-mono);}
+  .eyebrow{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--wisteria-deep); display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:""; width:18px; height:1px; background:var(--wisteria-deep); display:inline-block;}
+  h1,h2,h3{font-family:var(--font-display); font-weight:600; letter-spacing:-.01em; color:var(--ink);}
+  :focus-visible{outline:2px solid var(--wisteria-deep); outline-offset:3px;}
+
+  .grad-text{background:linear-gradient(100deg, var(--wisteria-deep), var(--gold)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+
+  /* aurora blobs */
+  .aurora{position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0;}
+  .aurora span{position:absolute; border-radius:50%; filter:blur(100px); opacity:.4; animation:float 18s ease-in-out infinite;}
+  .aurora .a1{width:520px; height:520px; background:var(--wisteria); top:-200px; left:-120px;}
+  .aurora .a2{width:420px; height:420px; background:var(--gold); top:20px; right:-160px; opacity:.22; animation-delay:-6s;}
+  .aurora .a3{width:380px; height:380px; background:var(--wisteria-deep); bottom:-220px; left:35%; opacity:.28; animation-delay:-11s;}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(30px,-40px) scale(1.08);}}
+
+  .dot-grid{
+    position:absolute; inset:0;
+    background-image: radial-gradient(var(--ink-soft) 1px, transparent 1px);
+    background-size:26px 26px;
+    opacity:.16;
+    -webkit-mask-image: radial-gradient(ellipse 75% 60% at 50% 25%, #000 30%, transparent 80%);
+            mask-image: radial-gradient(ellipse 75% 60% at 50% 25%, #000 30%, transparent 80%);
+    pointer-events:none;
+  }
+  .arc-deco{position:absolute; top:-60px; right:-90px; width:520px; height:520px; opacity:.5; pointer-events:none;}
+  .arc-deco circle{fill:none; stroke:var(--wisteria-deep);}
+  .spotlight{position:absolute; inset:0; pointer-events:none; z-index:1;
+    background: radial-gradient(420px circle at var(--mx,50%) var(--my,30%), rgba(93,111,160,.10), transparent 65%);
+  }
+
+
+  .brackets{position:relative;}
+  .brackets::before,.brackets::after,.brackets .b-tr,.brackets .b-bl{
+    content:""; position:absolute; width:16px; height:16px; border-style:solid; opacity:.9;
+  }
+  .brackets::before{top:-1px; left:-1px; border-width:1.5px 0 0 1.5px; border-color:var(--wisteria-deep);}
+  .brackets::after{bottom:-1px; right:-1px; border-width:0 1.5px 1.5px 0; border-color:var(--wisteria-deep);}
+  .brackets .b-tr{top:-1px; right:-1px; border-width:1.5px 1.5px 0 0; border-color:var(--wisteria-deep);}
+  .brackets .b-bl{bottom:-1px; left:-1px; border-width:0 0 1.5px 1.5px; border-color:var(--wisteria-deep);}
+  .brackets.on-dark::before,.brackets.on-dark::after,.brackets.on-dark .b-tr,.brackets.on-dark .b-bl{border-color:var(--wisteria);}
+
+  /* ---------- NAV ---------- */
+  header{position:sticky; top:0; z-index:50; background:rgba(251,248,241,.82); backdrop-filter: blur(14px); border-bottom:1px solid var(--line);}
+  .navbar{display:flex; align-items:center; justify-content:space-between; height:76px;}
+  .logo{display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:700; font-size:19px; color:var(--ink);}
+  .logo .mark{width:26px; height:26px; flex-shrink:0;}
+  .logo .id{color:var(--ink-soft); font-family:var(--font-mono); font-size:11px; font-weight:400; letter-spacing:.08em;}
+  nav.links{display:flex; align-items:center; gap:34px;}
+  nav.links .cta-btn, nav.links .cta-ghost{flex-shrink:0;}
+  nav.links a{font-size:14px; color:var(--ink-soft); font-weight:500; position:relative; padding:4px 0; transition:color .2s ease;}
+  nav.links a.cta-btn{padding:13px 22px; color:var(--paper); font-size:14px;}
+  nav.links a.cta-ghost{padding:10px 18px; color:var(--ink); font-size:12.5px;}
+  nav.links a:hover{color:var(--ink);}
+  nav.links a::after{content:""; position:absolute; left:0; bottom:-2px; height:1px; width:0; background:var(--wisteria-deep); transition:width .25s ease;}
+  nav.links a:hover::after{width:100%;}
+  .cta-btn{
+    font-family:var(--font-display); font-size:14px; letter-spacing:.01em;
+    background:linear-gradient(135deg, var(--ink), #2A3450); color:var(--paper); font-weight:600;
+    padding:13px 22px; border-radius:8px; white-space:nowrap; border:none; cursor:pointer;
+    display:inline-flex; align-items:center; gap:9px; position:relative; flex-shrink:0; width:max-content;
+    transition:transform .25s cubic-bezier(.2,.9,.3,1.3), box-shadow .3s ease, background .3s ease;
+  }
+  .cta-btn .arrow{display:inline-block; transition:transform .25s ease;}
+  .cta-btn:hover .arrow{transform:translateX(4px);}
+  .cta-btn:hover{background:linear-gradient(135deg, var(--wisteria-deep), var(--wisteria)); box-shadow:0 14px 32px -6px rgba(93,111,160,.4);}
+  .cta-btn.on-dark{background:linear-gradient(135deg, #FFFFFF, var(--paper)); color:var(--ink);}
+  .cta-btn.on-dark:hover{background:linear-gradient(135deg, var(--wisteria), var(--gold)); color:var(--ink-2);}
+  .cta-ghost{
+    font-family:var(--font-mono); font-size:12.5px; letter-spacing:.04em;
+    border:1px solid var(--line); color:var(--ink); padding:10px 18px; border-radius:3px;
+    flex-shrink:0; width:max-content; white-space:nowrap;
+    transition:border-color .2s ease, background .2s ease, transform .25s cubic-bezier(.2,.9,.3,1.3);
+  }
+  .cta-ghost:hover{border-color:var(--wisteria-deep); background:var(--paper-3);}
+
+  #nav-toggle{display:none;}
+  .burger{display:none; flex-direction:column; gap:5px; cursor:pointer; z-index:60;}
+  .burger span{width:22px; height:1.5px; background:var(--ink); display:block;}
+
+  /* ---------- TRUST PILL ---------- */
+  .trust-pill-wrap{position:relative; z-index:2; display:flex; justify-content:center; margin-bottom:44px;}
+  .trust-pill{
+    display:flex; align-items:center; gap:16px; background:var(--ink-2); color:var(--paper);
+    border-radius:999px; padding:12px 14px 12px 12px; max-width:100%;
+    box-shadow:0 18px 40px -14px rgba(27,34,51,.35);
+  }
+  .shield-badge{
+    width:38px; height:38px; border-radius:11px; flex-shrink:0;
+    background:linear-gradient(140deg, var(--wisteria), var(--wisteria-deep));
+    display:flex; align-items:center; justify-content:center;
+  }
+  .trust-pill span.msg{font-size:14.5px; font-weight:500; white-space:nowrap;}
+  .pill-icons{display:flex; align-items:center; gap:8px; padding-left:8px;}
+  .pill-icons .ic{
+    width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,.08);
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative; overflow:hidden; padding:64px 0 84px;}
+  .hero-inner{display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center; position:relative; z-index:2;}
+  .hero-eyebrow-row{display:flex; align-items:center; gap:12px; margin-bottom:18px;}
+  .compass{animation:spin 22s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .hero h1{font-size:clamp(34px,4.4vw,54px); line-height:1.08; margin:0 0 22px;}
+  .hero h1 .word{display:inline-block; opacity:0; transform:translateY(24px); animation:wordUp .7s cubic-bezier(.2,.8,.2,1) forwards;}
+  .hero h1 .word:nth-child(1){animation-delay:.05s;}
+  .hero h1 .word:nth-child(2){animation-delay:.13s;}
+  .hero h1 .word:nth-child(3){animation-delay:.21s;}
+  .hero h1 .word:nth-child(4){animation-delay:.29s;}
+  .hero h1 br + .word{animation-delay:.4s;}
+  @keyframes wordUp{to{opacity:1; transform:translateY(0);}}
+  .hero p.lead{color:var(--ink-soft); font-size:16.5px; max-width:480px; margin-bottom:34px; opacity:0; animation:fadeIn .8s ease .55s forwards;}
+  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap; opacity:0; animation:fadeIn .8s ease .7s forwards;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+
+  .diagram-panel{
+    position:relative; background:linear-gradient(180deg, var(--paper-2), var(--paper-3));
+    border:1px solid var(--line); padding:28px 24px 22px; border-radius:8px;
+    box-shadow:0 30px 70px -24px rgba(35,42,61,.22);
+    opacity:0; animation:fadeIn 1s ease .5s forwards;
+  }
+  .diagram-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:22px; font-family:var(--font-mono); font-size:11px; color:var(--ink-soft); letter-spacing:.06em;}
+  .diagram-head .rev{color:var(--wisteria-deep);}
+
+  .layer{
+    display:grid; grid-template-columns:1fr auto; align-items:center;
+    border:1px solid var(--line); background:rgba(255,255,255,.5);
+    padding:14px 16px; margin-bottom:10px; border-radius:5px;
+    transition:background .25s ease, border-color .25s ease, transform .25s ease;
+  }
+  .layer:hover{background:#fff; border-color:var(--wisteria-deep); transform:translateX(4px);}
+  .layer .lname{font-family:var(--font-display); font-weight:600; font-size:14.5px; color:var(--ink);}
+  .layer .ltag{font-family:var(--font-mono); font-size:10.5px; color:var(--ink-soft);}
+  .layer .lstack{font-family:var(--font-mono); font-size:11px; color:var(--wisteria-deep); font-weight:600; text-align:right;}
+
+  .dim-line{display:flex; align-items:center; gap:8px; margin:14px 0 4px; font-family:var(--font-mono); font-size:10px; color:var(--ink-soft);}
+  .dim-line .ln{flex:1; height:1px; background:repeating-linear-gradient(90deg, var(--ink-soft) 0 4px, transparent 4px 8px); opacity:.4;}
+
+  .draw-line{stroke-dasharray:600; stroke-dashoffset:600; animation:draw 1.8s ease .3s forwards;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+
+  /* ---------- STATS ---------- */
+  .stats{border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:36px 0; background:var(--paper-2);}
+  .stats-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:24px; text-align:center;}
+  .stat h3{font-size:clamp(26px,3vw,38px); color:var(--ink);}
+  .stat .stat-num{font-family:var(--font-display);}
+  .stat span{display:block; font-family:var(--font-mono); font-size:11px; color:var(--ink-soft); letter-spacing:.06em; margin-top:6px; text-transform:uppercase;}
+
+  /* ---------- TRUST MARQUEE ---------- */
+  .trust{border-bottom:1px solid var(--line); padding:20px 0; overflow:hidden; background:var(--paper-2);}
+  .trust-track{display:flex; gap:56px; width:max-content; animation:scroll 26s linear infinite;}
+  .trust-item{font-family:var(--font-mono); font-size:12.5px; color:var(--ink-soft); letter-spacing:.1em; display:flex; align-items:center; gap:10px; white-space:nowrap;}
+  .trust-item .dot{width:4px; height:4px; background:var(--wisteria-deep); border-radius:50%;}
+  @keyframes scroll{from{transform:translateX(0);} to{transform:translateX(-50%);}}
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:100px 0;}
+  .section-head{max-width:640px; margin-bottom:56px;}
+  .section-head h2{font-size:clamp(26px,3vw,36px); margin-top:14px;}
+  .section-head p{color:var(--ink-soft); margin-top:14px; font-size:15.5px;}
+
+  .reveal{opacity:0; transform:translateY(28px); transition:opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1);}
+  .reveal.in-view{opacity:1; transform:translateY(0);}
+
+  /* ---------- SERVICES ---------- */
+  .services-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+  .svc-card{background:var(--paper); padding:32px 28px; position:relative; transition:background .3s ease, transform .3s ease;}
+  .svc-card:hover{background:var(--paper-2); transform:translateY(-4px);}
+  .svc-card .code{font-family:var(--font-mono); font-size:11px; color:var(--ink-soft); letter-spacing:.06em; margin-bottom:20px; display:block;}
+  .icon-badge{width:40px; height:40px; border-radius:10px; background:linear-gradient(140deg, var(--paper-3), var(--paper-2)); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; margin-bottom:18px; transition:background .3s ease, border-color .3s ease;}
+  .svc-card:hover .icon-badge{border-color:var(--wisteria-deep); background:linear-gradient(140deg, var(--wisteria), var(--wisteria-deep));}
+  .svc-card:hover .icon-badge svg{stroke:var(--paper);}
+  .icon-badge svg{width:20px; height:20px; stroke:var(--wisteria-deep); transition:stroke .3s ease;}
+  .svc-card h3{font-size:17px; margin-bottom:8px;}
+  .svc-card p{font-size:14px; color:var(--ink-soft);}
+
+  /* ---------- PROCESS / REVISION LOG ---------- */
+  .process-grid{display:grid; grid-template-columns:1.15fr .85fr; gap:56px; align-items:start;}
+  .process-visual{
+    position:sticky; top:96px; background:linear-gradient(180deg, var(--paper-2), var(--paper-3));
+    border:1px solid var(--line); border-radius:10px; padding:20px 20px 22px;
+    box-shadow:0 26px 60px -22px rgba(35,42,61,.2);
+  }
+  .pv-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px; font-family:var(--font-mono); font-size:11px; color:var(--ink-soft); letter-spacing:.06em;}
+  .pv-head .rev{color:var(--wisteria-deep);}
+  .pv-frame{border-radius:6px; overflow:hidden; border:1px solid var(--line); background:var(--paper);}
+  .pv-frame img, .pv-frame video{width:100%; height:auto; display:block;}
+  .pv-caption{margin-top:14px; font-family:var(--font-mono); font-size:11px; color:var(--ink-soft); text-align:center;}
+  @media (max-width:920px){
+    .process-grid{grid-template-columns:1fr;}
+    .process-visual{position:static; order:-1;}
+  }
+
+  .rev-log{position:relative; padding-left:36px;}
+  .rev-log::before{content:""; position:absolute; left:5px; top:6px; bottom:6px; width:1px; background:var(--line-dark); opacity:.6;}
+  .rev-fill{position:absolute; left:5px; top:6px; width:1px; height:0; background:linear-gradient(var(--wisteria-deep), var(--gold)); box-shadow:0 0 8px rgba(93,111,160,.4); transition:height .45s cubic-bezier(.2,.8,.2,1);}
+  .rev-item{position:relative; padding-bottom:44px; cursor:default;}
+  .rev-item:last-child{padding-bottom:0;}
+  .rev-item::before{
+    content:""; position:absolute; left:-36px; top:4px; width:11px; height:11px;
+    border:1.5px solid var(--wisteria-deep); background:var(--paper); border-radius:50%; box-shadow:0 0 0 4px rgba(93,111,160,.10);
+    transition:background .35s ease, box-shadow .35s ease, transform .35s ease;
+  }
+  .rev-item.active::before{background:var(--wisteria-deep); box-shadow:0 0 0 5px rgba(93,111,160,.18); transform:scale(1.15);}
+  .rev-item .rev-tag{font-family:var(--font-mono); font-size:11px; color:var(--wisteria-deep); letter-spacing:.08em; margin-bottom:6px; display:block; transition:opacity .3s ease;}
+  .rev-item h3{font-size:19px; margin-bottom:6px; transition:color .3s ease;}
+  .rev-item p{color:var(--ink-soft); font-size:14.5px; max-width:560px;}
+  .rev-item.active h3{color:var(--wisteria-deep);}
+
+  /* ---------- CTA BANNER ---------- */
+  .cta-banner{
+    position:relative; border:1px solid var(--line-dark); background:var(--ink-2); color:var(--paper);
+    padding:64px 48px; text-align:center; overflow:hidden; border-radius:10px;
+  }
+  .cta-banner::before{
+    content:""; position:absolute; inset:-2px; z-index:0; border-radius:10px; padding:1px;
+    background:linear-gradient(120deg, var(--wisteria), transparent 30%, transparent 70%, var(--gold));
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; opacity:.7;
+  }
+  .cta-banner > *{position:relative; z-index:1;}
+  .cta-banner h2{font-size:clamp(24px,3.4vw,38px); max-width:720px; margin:0 auto 28px; color:var(--paper);}
+  .cta-banner .gold-word{color:var(--gold);}
+  .cta-banner .eyebrow{color:var(--wisteria); justify-content:center; margin-bottom:18px;}
+  .cta-banner .eyebrow::before{background:var(--wisteria);}
+
+  /* ---------- FAQ ---------- */
+  .faq-list{border-top:1px solid var(--line);}
+  details{border-bottom:1px solid var(--line); padding:22px 0;}
+  summary{cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; font-family:var(--font-display); font-size:16.5px; font-weight:500; gap:20px; color:var(--ink);}
+  summary::-webkit-details-marker{display:none;}
+  summary .qnum{font-family:var(--font-mono); font-size:12px; color:var(--wisteria-deep); margin-right:14px;}
+  summary .plus{font-family:var(--font-mono); color:var(--ink-soft); font-size:18px; transition:transform .25s ease;}
+  details[open] summary .plus{transform:rotate(45deg); color:var(--wisteria-deep);}
+  details p{color:var(--ink-soft); font-size:14.5px; margin-top:14px; padding-left:30px; max-width:640px;}
+
+  /* ---------- CONTACT ---------- */
+  .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:start;}
+  .contact-list{margin-top:26px; display:flex; flex-direction:column; gap:14px;}
+  .contact-list li{display:flex; gap:12px; font-size:14.5px; color:var(--ink-soft);}
+  .contact-list li .n{font-family:var(--font-mono); color:var(--wisteria-deep); font-size:12px; padding-top:2px;}
+  .contact-panel{background:var(--paper-2); border:1px solid var(--line); padding:34px; border-radius:8px;}
+  .contact-panel .mono-label{font-family:var(--font-mono); font-size:11px; color:var(--ink-soft); letter-spacing:.06em; margin-bottom:6px; display:block;}
+  .contact-panel .email{font-family:var(--font-display); font-size:20px; color:var(--ink); margin-bottom:26px; display:block; word-break:break-word; transition:color .2s ease;}
+  .contact-panel .email:hover{color:var(--wisteria-deep);}
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:1px solid var(--line-dark); padding:64px 0 32px; background:var(--ink-2); color:var(--slate-on-dark);}
+  .foot-top{display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:40px; margin-bottom:56px;}
+  .foot-top h4{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.08em; color:var(--slate-on-dark); margin-bottom:18px; text-transform:uppercase;}
+  .foot-top ul{display:flex; flex-direction:column; gap:11px;}
+  .foot-top ul a{font-size:14px; color:var(--paper); opacity:.85; transition:color .2s ease;}
+  .foot-top ul a:hover{color:var(--wisteria); opacity:1;}
+  .foot-brand p{color:var(--slate-on-dark); font-size:13.5px; max-width:280px; margin-top:14px;}
+  .foot-bottom{display:flex; justify-content:space-between; align-items:center; padding-top:26px; border-top:1px solid var(--line-dark); font-family:var(--font-mono); font-size:12px; color:var(--slate-on-dark); flex-wrap:wrap; gap:12px;}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 920px){
+    nav.links{display:none;}
+    .burger{display:flex;}
+    #nav-toggle:checked ~ .mobile-menu{max-height:340px; padding:16px 0;}
+    .mobile-menu{max-height:0; overflow:hidden; transition:max-height .3s ease; border-top:1px solid var(--line);}
+    .mobile-menu a{display:block; padding:12px 28px; font-size:14.5px; color:var(--ink);}
+    .hero-inner{grid-template-columns:1fr; gap:44px;}
+    .services-grid{grid-template-columns:1fr 1fr;}
+    .contact-grid{grid-template-columns:1fr;}
+    .foot-top{grid-template-columns:1fr 1fr;}
+    .stats-grid{grid-template-columns:1fr 1fr; gap:32px;}
+    .trust-pill{flex-wrap:wrap; border-radius:20px;}
+    .trust-pill span.msg{white-space:normal;}
+  }
+  @media (max-width: 600px){
+    section{padding:72px 0;}
+    .hero{padding:44px 0 60px;}
+    .services-grid{grid-template-columns:1fr;}
+    .foot-top{grid-template-columns:1fr;}
+    .cta-banner{padding:44px 24px;}
+    .stats-grid{grid-template-columns:1fr 1fr;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    .trust-track, .aurora span, .compass{animation:none;}
+    .hero h1 .word, .hero p.lead, .hero-ctas, .diagram-panel{animation:none; opacity:1; transform:none;}
+    .draw-line{animation:none; stroke-dashoffset:0;}
+    *{transition:none !important;}
+    .reveal{opacity:1; transform:none;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap navbar">
+    <a href="#top" class="logo">
+      <svg class="mark" viewBox="0 0 26 26" fill="none">
+        <circle cx="13" cy="13" r="11.5" stroke="#5D6FA0" stroke-width="1.3"/>
+        <path d="M13 3v20M3 13h20" stroke="#90A2C9" stroke-width="1" opacity=".6"/>
+        <circle cx="13" cy="13" r="3" fill="#C89B3C"/>
+      </svg>
+      tcongs <span class="id">/ infotech</span>
+    </a>
+    <input type="checkbox" id="nav-toggle">
+    <nav class="links">
+      <a href="#top">Home</a>
+      <a href="#services">Solutions</a>
+      <a href="#process">Process</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact" class="cta-ghost">Connect</a>
+      <a href="https://calendly.com/tcongsinfotech/30min" class="cta-btn">Schedule call <span class="arrow">→</span></a>
+    </nav>
+    <label for="nav-toggle" class="burger" aria-label="Toggle menu"><span></span><span></span><span></span></label>
+  </div>
+  <div class="mobile-menu wrap" style="padding-left:0;">
+    <a href="#top">Home</a>
+    <a href="#services">Solutions</a>
+    <a href="#process">Process</a>
+    <a href="#faq">FAQ</a>
+    <a href="#contact">Connect</a>
+    <a href="https://calendly.com/tcongsinfotech/30min">Schedule call <span class="arrow">→</span></a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+    <div class="dot-grid"></div>
+    <svg class="arc-deco" viewBox="0 0 520 520">
+      <circle cx="520" cy="0" r="120" stroke-width="1"/>
+      <circle cx="520" cy="0" r="190" stroke-width="1" opacity=".75"/>
+      <circle cx="520" cy="0" r="260" stroke-width="1" opacity=".5"/>
+      <circle cx="520" cy="0" r="330" stroke-width="1" opacity=".3"/>
+      <circle cx="520" cy="0" r="6" fill="var(--gold)" stroke="none"/>
+    </svg>
+    <div class="spotlight" id="spotlight"></div>
+
+    <div class="wrap" style="position:relative; z-index:2;">
+      <!-- TRUST PILL -->
+      <div class="trust-pill-wrap reveal">
+        <div class="trust-pill">
+          <div class="shield-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2 4 5v6c0 5 3.4 9 8 11 4.6-2 8-6 8-11V5l-8-3z" stroke="#F6F0E4" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M13 8l-3.5 5H12l-1 3 3.5-5H12l1-3z" fill="#F6F0E4"/>
+            </svg>
+          </div>
+          <span class="msg">Trusted by businesses worldwide to build scalable digital solutions</span>
+          <div class="pill-icons">
+            <span class="ic" title="Frontend">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="1.8" fill="#90A2C9"/><ellipse cx="12" cy="12" rx="9" ry="3.6" stroke="#90A2C9" stroke-width="1.3"/><ellipse cx="12" cy="12" rx="9" ry="3.6" stroke="#90A2C9" stroke-width="1.3" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.6" stroke="#90A2C9" stroke-width="1.3" transform="rotate(120 12 12)"/></svg>
+            </span>
+            <span class="ic" title="Code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 6 2 12l6 6M16 6l6 6-6 6" stroke="#F6F0E4" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="ic" title="Design">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" fill="#C89B3C"/><rect x="13" y="4" width="7" height="7" rx="1.5" fill="#90A2C9"/><rect x="4" y="13" width="7" height="7" rx="1.5" fill="#F6F0E4" opacity=".85"/><rect x="13" y="13" width="7" height="7" rx="1.5" fill="#5D6FA0"/></svg>
+            </span>
+            <span class="ic" title="Marketing">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 10v4l3 1 12 4V5L6 9l-3 1z" stroke="#C89B3C" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 15.5V19a2 2 0 0 0 4 0v-2" stroke="#C89B3C" stroke-width="1.5"/></svg>
+            </span>
+            <span class="ic" title="AI">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="8" height="8" rx="1.5" stroke="#90A2C9" stroke-width="1.4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2" stroke="#90A2C9" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap hero-inner">
+      <div>
+        <div class="hero-eyebrow-row">
+          <svg class="compass" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="2" fill="#5D6FA0"/><path d="M12 12 6 20M12 12l9-3" stroke="#5D6FA0" stroke-width="1.4" stroke-linecap="round"/><circle cx="6" cy="20" r="1.4" fill="#C89B3C"/></svg>
+          <span class="eyebrow">Digital Product Blueprint · Est. 2018</span>
+        </div>
+        <h1><span class="word">Smart</span> <span class="word">digital</span> <span class="word">products,</span> <span class="word grad-text">drafted properly</span><br><span class="word">before they're built.</span></h1>
+        <p class="lead">We spec, design and ship web, app and growth systems for businesses across India, the US and the Gulf — from first sketch to scaled product.</p>
+        <div class="hero-ctas">
+          <a href="https://calendly.com/tcongsinfotech/30min" class="cta-btn magnetic">Schedule Meeting <span class="arrow">→</span></a>
+          <a href="#services" class="cta-ghost magnetic">View services</a>
+        </div>
+      </div>
+
+      <div class="diagram-panel brackets">
+        <span class="b-tr"></span><span class="b-bl"></span>
+        <div class="diagram-head">
+          <span>SPEC — HOME SCREEN</span>
+          <span class="rev">REV. 2026.03</span>
+        </div>
+
+        <svg viewBox="0 0 460 385" width="100%" style="overflow:visible;">
+          <!-- frame -->
+          <g class="dpart" style="animation-delay:.05s">
+            <rect x="20" y="10" width="400" height="330" rx="10" fill="none" stroke="var(--ink-soft)" stroke-width="1.4" opacity=".7"/>
+            <line x1="20" y1="44" x2="420" y2="44" stroke="var(--ink-soft)" stroke-width="1" opacity=".4"/>
+            <circle cx="36" cy="27" r="3" fill="var(--wisteria)"/>
+            <circle cx="50" cy="27" r="3" fill="var(--gold)" opacity=".8"/>
+            <circle cx="64" cy="27" r="3" fill="var(--wisteria-deep)"/>
+            <rect x="90" y="20" width="280" height="14" rx="7" fill="none" stroke="var(--ink-soft)" stroke-width="1" opacity=".45"/>
+          </g>
+
+          <g class="dpart" style="animation-delay:.15s">
+            <rect x="36" y="60" width="54" height="10" rx="2" fill="var(--ink-soft)" opacity=".5"/>
+            <rect x="300" y="63" width="18" height="8" rx="2" fill="var(--ink-soft)" opacity=".35"/>
+            <rect x="326" y="63" width="18" height="8" rx="2" fill="var(--ink-soft)" opacity=".35"/>
+            <rect x="352" y="63" width="18" height="8" rx="2" fill="var(--ink-soft)" opacity=".35"/>
+          </g>
+
+          <!-- selected hero block, figma-style -->
+          <g class="dpart" style="animation-delay:.25s">
+            <rect x="36" y="90" width="368" height="112" rx="6" fill="var(--wisteria)" fill-opacity=".07" stroke="var(--wisteria-deep)" stroke-width="1.3" stroke-dasharray="4 3"/>
+            <rect x="56" y="112" width="170" height="10" rx="2" fill="var(--ink)" opacity=".55"/>
+            <rect x="56" y="132" width="230" height="7" rx="2" fill="var(--ink-soft)" opacity=".45"/>
+            <rect x="56" y="144" width="190" height="7" rx="2" fill="var(--ink-soft)" opacity=".45"/>
+            <rect x="56" y="164" width="82" height="20" rx="10" fill="var(--wisteria-deep)"/>
+            <text x="97" y="177" text-anchor="middle" font-family="var(--font-mono)" font-size="9.5" fill="var(--paper)">SCHEDULE →</text>
+            <rect x="33" y="87" width="6" height="6" fill="var(--wisteria-deep)"/>
+            <rect x="401" y="87" width="6" height="6" fill="var(--wisteria-deep)"/>
+            <rect x="33" y="199" width="6" height="6" fill="var(--wisteria-deep)"/>
+            <rect x="401" y="199" width="6" height="6" fill="var(--wisteria-deep)"/>
+            <text x="220" y="219" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--wisteria-deep)">368 × 112</text>
+          </g>
+
+          <!-- three cards -->
+          <g class="dpart" style="animation-delay:.35s">
+            <g transform="translate(36,222)">
+              <rect width="112" height="64" rx="6" fill="none" stroke="var(--ink-soft)" stroke-width="1" opacity=".4"/>
+              <circle cx="18" cy="20" r="7" fill="var(--wisteria)" opacity=".55"/>
+              <rect x="34" y="15" width="58" height="6" rx="2" fill="var(--ink-soft)" opacity=".5"/>
+              <rect x="34" y="27" width="40" height="6" rx="2" fill="var(--ink-soft)" opacity=".3"/>
+              <rect x="16" y="45" width="80" height="5" rx="2" fill="var(--ink-soft)" opacity=".28"/>
+            </g>
+            <g transform="translate(164,222)">
+              <rect width="112" height="64" rx="6" fill="none" stroke="var(--ink-soft)" stroke-width="1" opacity=".4"/>
+              <circle cx="18" cy="20" r="7" fill="var(--gold)" opacity=".55"/>
+              <rect x="34" y="15" width="58" height="6" rx="2" fill="var(--ink-soft)" opacity=".5"/>
+              <rect x="34" y="27" width="40" height="6" rx="2" fill="var(--ink-soft)" opacity=".3"/>
+              <rect x="16" y="45" width="80" height="5" rx="2" fill="var(--ink-soft)" opacity=".28"/>
+            </g>
+            <g transform="translate(292,222)">
+              <rect width="112" height="64" rx="6" fill="none" stroke="var(--ink-soft)" stroke-width="1" opacity=".4"/>
+              <circle cx="18" cy="20" r="7" fill="var(--wisteria-deep)" opacity=".55"/>
+              <rect x="34" y="15" width="58" height="6" rx="2" fill="var(--ink-soft)" opacity=".5"/>
+              <rect x="34" y="27" width="40" height="6" rx="2" fill="var(--ink-soft)" opacity=".3"/>
+              <rect x="16" y="45" width="80" height="5" rx="2" fill="var(--ink-soft)" opacity=".28"/>
+            </g>
+          </g>
+
+          <!-- footer strip -->
+          <g class="dpart" style="animation-delay:.45s">
+            <line x1="36" y1="300" x2="404" y2="300" stroke="var(--ink-soft)" stroke-width="1" opacity=".3"/>
+            <rect x="56" y="312" width="56" height="6" rx="2" fill="var(--ink-soft)" opacity=".35"/>
+            <rect x="140" y="312" width="56" height="6" rx="2" fill="var(--ink-soft)" opacity=".35"/>
+            <rect x="224" y="312" width="56" height="6" rx="2" fill="var(--ink-soft)" opacity=".35"/>
+            <rect x="308" y="312" width="56" height="6" rx="2" fill="var(--ink-soft)" opacity=".35"/>
+          </g>
+
+          <!-- dimension annotations -->
+          <g class="dpart" style="animation-delay:.55s" font-family="var(--font-mono)" fill="var(--ink-soft)">
+            <line x1="435" y1="10" x2="435" y2="340" stroke="var(--ink-soft)" stroke-width="1" stroke-dasharray="2 3" opacity=".5"/>
+            <line x1="430" y1="10" x2="440" y2="10" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+            <line x1="430" y1="340" x2="440" y2="340" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+            <text x="450" y="175" font-size="9" transform="rotate(90 450 175)" text-anchor="middle" opacity=".7">330PX</text>
+
+            <line x1="20" y1="355" x2="420" y2="355" stroke="var(--ink-soft)" stroke-width="1" stroke-dasharray="2 3" opacity=".5"/>
+            <line x1="20" y1="350" x2="20" y2="360" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+            <line x1="420" y1="350" x2="420" y2="360" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+            <text x="220" y="378" font-size="9" text-anchor="middle" opacity=".7">400PX</text>
+          </g>
+        </svg>
+
+        <div style="margin-top:10px; font-family:var(--font-mono); font-size:10px; color:var(--ink-soft); display:flex; justify-content:space-between;">
+          <span>SCALE 1:1</span>
+          <span>8+ YRS IN PRODUCTION</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="wrap stats-grid">
+      <div class="stat"><h3 class="stat-num" data-count="8">0</h3><span>Years in production</span></div>
+      <div class="stat"><h3 class="stat-num" data-count="120">0</h3><span>Products shipped</span></div>
+      <div class="stat"><h3 class="stat-num" data-count="18">0</h3><span>Countries served</span></div>
+      <div class="stat"><h3 class="stat-num" data-count="6">0</h3><span>Core disciplines</span></div>
+    </div>
+  </div>
+
+  <!-- TRUST MARQUEE -->
+  <div class="trust">
+    <div class="trust-track">
+      <div class="trust-item"><span class="dot"></span>REACT</div>
+      <div class="trust-item"><span class="dot"></span>NODE.JS</div>
+      <div class="trust-item"><span class="dot"></span>FIGMA</div>
+      <div class="trust-item"><span class="dot"></span>SHOPIFY</div>
+      <div class="trust-item"><span class="dot"></span>LARAVEL</div>
+      <div class="trust-item"><span class="dot"></span>AWS</div>
+      <div class="trust-item"><span class="dot"></span>FLUTTER</div>
+      <div class="trust-item"><span class="dot"></span>GEO / SEO</div>
+      <div class="trust-item"><span class="dot"></span>REACT</div>
+      <div class="trust-item"><span class="dot"></span>NODE.JS</div>
+      <div class="trust-item"><span class="dot"></span>FIGMA</div>
+      <div class="trust-item"><span class="dot"></span>SHOPIFY</div>
+      <div class="trust-item"><span class="dot"></span>LARAVEL</div>
+      <div class="trust-item"><span class="dot"></span>AWS</div>
+      <div class="trust-item"><span class="dot"></span>FLUTTER</div>
+      <div class="trust-item"><span class="dot"></span>GEO / SEO</div>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">What we build</span>
+        <h2>Six disciplines, one connected build.</h2>
+        <p>Every engagement draws from the same spec sheet — design, code and growth working off the same source of truth.</p>
+      </div>
+
+      <div class="services-grid reveal">
+        <div class="svc-card">
+          <span class="code">S — 01</span>
+          <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5 3 12l5 7M16 5l5 7-5 7M14 4l-4 16"/></svg></div>
+          <h3>Web & App Development</h3>
+          <p>Fast, scalable sites and apps built on React, Next.js and Flutter.</p>
+        </div>
+        <div class="svc-card">
+          <span class="code">S — 02</span>
+          <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg></div>
+          <h3>Software Development</h3>
+          <p>Custom platforms, SaaS products and enterprise systems, built to spec.</p>
+        </div>
+        <div class="svc-card">
+          <span class="code">S — 03</span>
+          <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h8a2 2 0 0 0 2-1.6L21 7H6"/></svg></div>
+          <h3>E-commerce Solutions</h3>
+          <p>Storefronts and marketplace ops across Amazon, Flipkart, Myntra & more.</p>
+        </div>
+        <div class="svc-card">
+          <span class="code">S — 04</span>
+          <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-7 18-3-8-8-3z"/></svg></div>
+          <h3>Digital Marketing</h3>
+          <p>SEO, paid media and content that compound instead of just spike.</p>
+        </div>
+        <div class="svc-card">
+          <span class="code">S — 05</span>
+          <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5z"/><path d="M12 12 3 7M12 12l9-5M12 12v10"/></svg></div>
+          <h3>Branding & UI/UX</h3>
+          <p>Identity systems and interfaces designed in Figma, tested with real users.</p>
+        </div>
+        <div class="svc-card">
+          <span class="code">S — 06</span>
+          <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M21 7v6M21 7h-6"/></svg></div>
+          <h3>Business Growth</h3>
+          <p>Funnels, retention and analytics that turn traffic into revenue.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Revision log</span>
+        <h2>From idea to shipped product, in six revisions.</h2>
+        <p>The same process runs on every build, so nothing gets skipped between strategy and launch.</p>
+      </div>
+
+      <div class="process-grid">
+        <div class="rev-log reveal" id="revLog">
+          <div class="rev-fill" id="revFill"></div>
+          <div class="rev-item" data-index="1"><span class="rev-tag">REV. 01 — DISCOVERY</span><h3>Business & market analysis</h3><p>We map your goals, audience and competitors to set the right foundation before anything gets built.</p></div>
+          <div class="rev-item" data-index="2"><span class="rev-tag">REV. 02 — PLANNING</span><h3>Strategy & architecture</h3><p>Project plans, user flows and system architecture, drafted so development runs without surprises.</p></div>
+          <div class="rev-item" data-index="3"><span class="rev-tag">REV. 03 — DESIGN</span><h3>UI/UX & branding</h3><p>Interfaces designed for how people actually use them, reflecting your brand at every screen.</p></div>
+          <div class="rev-item" data-index="4"><span class="rev-tag">REV. 04 — DEVELOPMENT</span><h3>Web & app build</h3><p>Fast, secure, scalable code, written with the technologies your product actually needs.</p></div>
+          <div class="rev-item" data-index="5"><span class="rev-tag">REV. 05 — TESTING</span><h3>Quality assurance</h3><p>Every feature checked for performance, security and usability across devices before launch.</p></div>
+          <div class="rev-item" data-index="6"><span class="rev-tag">REV. 06 — LAUNCH & GROWTH</span><h3>Deployment & marketing</h3><p>We ship, then keep optimizing — SEO, marketing and iteration to grow what we built.</p></div>
+        </div>
+
+        <div class="process-visual reveal brackets">
+          <span class="b-tr"></span><span class="b-bl"></span>
+          <div class="pv-head">
+            <span>REF — PROCESS.01</span>
+            <span class="rev">LOOP</span>
+          </div>
+          <div class="pv-frame">
+            <video src="./process-visual.mp4" poster="./process-visual-poster.jpg" autoplay muted loop playsinline></video>
+          </div>
+          <p class="pv-caption">Every revision, sketched before it's shipped.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section style="padding-top:0;">
+    <div class="wrap">
+      <div class="cta-banner brackets on-dark reveal">
+        <span class="b-tr"></span><span class="b-bl"></span>
+        <span class="eyebrow">Build. Scale. Grow.</span>
+        <h2>Ready to draft your next <span class="gold-word">digital product</span>?</h2>
+        <a href="https://calendly.com/tcongsinfotech/30min" class="cta-btn on-dark magnetic">Start your project <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">FAQ</span>
+        <h2>Questions we get before kickoff.</h2>
+      </div>
+
+      <div class="faq-list reveal">
+        <details open><summary><span><span class="qnum">01</span>What services does tcongs Infotech offer?</span><span class="plus">+</span></summary><p>Web and app development, custom software, e-commerce management and digital marketing — everything a business needs to grow online.</p></details>
+        <details><summary><span><span class="qnum">02</span>How long does a website or app take to build?</span><span class="plus">+</span></summary><p>A basic website usually takes 7–15 days. Larger platforms or mobile apps typically run 3–8 weeks depending on scope.</p></details>
+        <details><summary><span><span class="qnum">03</span>Do you work with international clients?</span><span class="plus">+</span></summary><p>Yes — we work with clients across the US, Canada, Dubai and beyond, with remote support throughout the project.</p></details>
+        <details><summary><span><span class="qnum">04</span>Can you help grow my business after launch?</span><span class="plus">+</span></summary><p>Yes. SEO, digital marketing and marketplace management keep working after launch to drive traffic, leads and sales.</p></details>
+        <details><summary><span><span class="qnum">05</span>What makes tcongs Infotech different?</span><span class="plus">+</span></summary><p>We treat a build as one connected system — strategy, design, code and marketing on the same spec, not separate handoffs.</p></details>
+        <details><summary><span><span class="qnum">06</span>How do I get started?</span><span class="plus">+</span></summary><p>Schedule a call or send an inquiry below. We'll come back with a clear proposal, timeline and pricing within a business day.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="wrap contact-grid">
+      <div class="reveal">
+        <span class="eyebrow">Contact</span>
+        <h2 style="margin-top:14px; font-size:clamp(24px,3vw,34px);">Let's build something you'll be proud of.</h2>
+        <p style="color:var(--ink-soft); margin-top:14px; font-size:15px; max-width:440px;">Have a project in mind? Whether it's a website, an app, or a full digital system — tell us where you're headed.</p>
+        <ul class="contact-list">
+          <li><span class="n">01</span> You'll hear from us within one business day.</li>
+          <li><span class="n">02</span> We'll understand your goals and requirements.</li>
+          <li><span class="n">03</span> You'll receive a clear proposal with pricing & timeline.</li>
+        </ul>
+      </div>
+
+      <div class="contact-panel brackets reveal">
+        <span class="b-tr"></span><span class="b-bl"></span>
+        <span class="mono-label">PREFER EMAIL —</span>
+        <a href="mailto:info@tcongsinfotech.com" class="email">info@tcongsinfotech.com</a>
+        <span class="mono-label">OR SCHEDULE DIRECTLY —</span>
+        <a href="https://calendly.com/tcongsinfotech/30min" class="cta-btn magnetic" style="margin-top:10px;">Book a free call <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a href="#top" class="logo" style="font-size:18px; color:var(--paper);">
+          <svg class="mark" viewBox="0 0 26 26" fill="none">
+            <circle cx="13" cy="13" r="11.5" stroke="#90A2C9" stroke-width="1.3"/>
+            <circle cx="13" cy="13" r="3" fill="#C89B3C"/>
+          </svg>
+          tcongs
+        </a>
+        <p>8+ years building web, e-commerce and growth systems for brands across India and abroad.</p>
+      </div>
+      <div><h4>Company</h4><ul><li><a href="#top">Home</a></li><li><a href="#services">Solutions</a></li><li><a href="#contact">Connect</a></li></ul></div>
+      <div><h4>Services</h4><ul><li><a href="#services">Web & App Dev</a></li><li><a href="#services">E-commerce</a></li><li><a href="#services">Digital Marketing</a></li></ul></div>
+      <div><h4>Office</h4><ul><li style="color:var(--slate-on-dark);">Mumbai, India</li><li><a href="mailto:info@tcongsinfotech.com">info@tcongsinfotech.com</a></li><li><a href="https://in.linkedin.com/company/tcongs-infotech">LinkedIn ↗</a></li></ul></div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 TCONGS INFOTECH</span>
+      <span>DRAFTED IN BLUEPRINT / REV. 2026.03</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const hero = document.querySelector('.hero');
+  if (hero && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    hero.addEventListener('mousemove', (e) => {
+      const r = hero.getBoundingClientRect();
+      hero.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      hero.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  }
+  if (matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    document.querySelectorAll('.magnetic').forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const r = btn.getBoundingClientRect();
+        const x = (e.clientX - r.left - r.width/2) * 0.25;
+        const y = (e.clientY - r.top - r.height/2) * 0.35;
+        btn.style.transform = `translate(${x}px, ${y}px)`;
+      });
+      btn.addEventListener('mouseleave', () => { btn.style.transform = 'translate(0,0)'; });
+    });
+  }
+  const revLog = document.getElementById('revLog');
+  const revFill = document.getElementById('revFill');
+  if (revLog && revFill) {
+    const revItems = Array.from(revLog.querySelectorAll('.rev-item'));
+    const setFill = (index) => {
+      if (index === 0) { revFill.style.height = '0px'; revItems.forEach(it => it.classList.remove('active')); return; }
+      const target = revItems[index - 1];
+      const dotCenter = target.offsetTop + 4 + 5.5; // dot's top offset + half its height
+      revFill.style.height = dotCenter + 'px';
+      revItems.forEach(it => it.classList.toggle('active', parseInt(it.dataset.index, 10) <= index));
+    };
+    revItems.forEach(item => {
+      item.addEventListener('mouseenter', () => setFill(parseInt(item.dataset.index, 10)));
+    });
+    revLog.addEventListener('mouseleave', () => setFill(0));
+  }
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in-view'); io.unobserve(en.target); } });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  const counters = document.querySelectorAll('.stat-num');
+  const cio = new IntersectionObserver((entries) => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        const el = en.target;
+        const target = parseInt(el.dataset.count, 10);
+        const dur = 1200;
+        const start = performance.now();
+        function tick(now){
+          const p = Math.min((now - start) / dur, 1);
+          el.textContent = Math.floor(p * target) + (p === 1 ? '+' : '');
+          if (p < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+        cio.unobserve(el);
+      }
+    });
+  }, { threshold: 0.4 });
+  counters.forEach(c => cio.observe(c));
+</script>
+
+</body>
+</html>
